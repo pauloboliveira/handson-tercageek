@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:viavarejo/api_caller.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,7 +14,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   var produtoObjeto;
-  final StreamController _streamController = StreamController();
+  final StreamController _streamController = BehaviorSubject();
   final TextEditingController _idSkuLojista = TextEditingController();
   bool sendingRequest = false;
 
@@ -76,11 +77,8 @@ class _HomePageState extends State<HomePage> {
                   _streamController.add(null);
 
                   var info = await api.getProduto(_idSkuLojista.text);
-                  setState(() {
-                    produtoObjeto = info;
-                  });
 
-                  _streamController.add(produtoObjeto);
+                  _streamController.add(info);
                   sendingRequest = false;
                 },
                 style: const ButtonStyle(
@@ -94,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-            ),
+            ),// TEXTBUTTON
             const SizedBox(height: 15,),
             _info(),
           ],
@@ -135,13 +133,15 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
+        var produtoObjeto = snapshot.data;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _labelText('MARCA'),
-            _cardInfo(produtoObjeto != null ? produtoObjeto['marca'] : ''),
+            _cardInfo(produtoObjeto['marca']),
             _labelText('TÍTULO'),
-            _cardInfo(produtoObjeto != null ? produtoObjeto['titulo'] : ''),
+            _cardInfo(produtoObjeto['titulo']),
             const SizedBox(height: 15,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -154,11 +154,11 @@ class _HomePageState extends State<HomePage> {
             Row(
               children: [
                 Expanded(
-                    child: _containerInfo(produtoObjeto != null ? produtoObjeto['sku']['dimensao']['peso'] : '') // PESO
+                    child: _containerInfo(produtoObjeto['sku']['dimensao']['peso']) // PESO
                 ),
                 const SizedBox(width: 10,),
                 Expanded(
-                    child: _containerInfo(produtoObjeto != null ? produtoObjeto['sku']['dimensao']['altura'] : '') // ALTURA
+                    child: _containerInfo(produtoObjeto['sku']['dimensao']['altura']) // ALTURA
                 ),
               ],
             ),
@@ -173,11 +173,11 @@ class _HomePageState extends State<HomePage> {
             Row(
               children: [
                 Expanded(
-                    child: _containerInfo(produtoObjeto != null ? produtoObjeto['sku']['dimensao']['largura'] : '') // LARGURA
+                    child: _containerInfo(produtoObjeto['sku']['dimensao']['largura']) // LARGURA
                 ),
                 const SizedBox(width: 10,),
                 Expanded(
-                    child: _containerInfo(produtoObjeto != null ? produtoObjeto['sku']['dimensao']['profundidade'] : '') // PROFUNDIDADE
+                    child: _containerInfo(produtoObjeto['sku']['dimensao']['profundidade']) // PROFUNDIDADE
                 ),
               ],
             ),
